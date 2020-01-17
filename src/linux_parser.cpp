@@ -119,10 +119,6 @@ long LinuxParser::Jiffies() {
   return sum_;
 }
 
-// TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
-
 // Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
   std::ifstream stream(kProcDirectory + kStatFilename);
@@ -190,6 +186,11 @@ int LinuxParser::RunningProcesses() {
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid[[maybe_unused]]) { return string(); }
+
+// TODO: Read and return the number of active jiffies for a PID
+// REMOVE: [[maybe_unused]] once you define the function
+long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+
 
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
