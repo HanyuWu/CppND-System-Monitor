@@ -41,7 +41,7 @@ string LinuxParser::Kernel() {
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
-    linestream >> os >> version >>  kernel;
+    linestream >> os >> version >> kernel;
   }
   return kernel;
 }
@@ -80,10 +80,35 @@ long LinuxParser::Jiffies() { return 0; }
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
 // TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
+long LinuxParser::ActiveJiffies() {
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  string line, temp;
+  long user, nice, system, irq, softirq, steal, sum_ = 0;
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    linestream >> temp >> user >> nice >> system >> temp >> temp >> irq >>
+        softirq >> steal;
+    sum_ = user + nice + system + irq + softirq + steal;
+    return sum_;
+  }
+  return sum_;
+}
 
 // TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { return 0; }
+long LinuxParser::IdleJiffies() {
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  string line, temp;
+  long idle, iowait, sum_ = 0;
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    linestream >> temp >> temp >> temp >> temp >> idle >> iowait;
+    sum_ = idle + iowait;
+    return sum_;
+  }
+  return sum_;
+}
 
 // TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }
