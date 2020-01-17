@@ -171,8 +171,8 @@ int LinuxParser::RunningProcesses() {
       while (std::getline(stream, line)) {
         std::istringstream linestream(line);
         linestream >> key >> flag;
-        if (key == "State:"){
-          if (flag == "R"){
+        if (key == "State:") {
+          if (flag == "R") {
             running_process++;
             break;
           }
@@ -185,12 +185,19 @@ int LinuxParser::RunningProcesses() {
 
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Command(int pid[[maybe_unused]]) { return string(); }
+string LinuxParser::Command(int pid) {
+  string cmdl;
+  std::ifstream stream(kProcDirectory + to_string(pid) + kCmdlineFilename);
+  if(stream.is_open()){
+    std::getline(stream, cmdl);
+    return cmdl;
+  }
+  return string();
+}
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
-
 
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
