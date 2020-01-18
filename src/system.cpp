@@ -25,6 +25,7 @@ vector<Process>& System::Processes() {
     processes_.push_back(Process(pid[i]));  // I am actually very confusing about how this push_back work, how does it
                                             // append the local variable(Processes class)? Is this a so-called deep copy?
   }
+  std::sort(processes_.begin(),processes_.end());
   return processes_;
 }
 
