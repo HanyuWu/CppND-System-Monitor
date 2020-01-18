@@ -150,7 +150,7 @@ long LinuxParser::IdleJiffies() {
   return sum_;
 }
 
-// I don't think I should utilize this function...
+// I don't think I have to use this function...
 // TODO: Read and return CPU utilization
 // vector<string> LinuxParser::CpuUtilization() { return {}; }
 
@@ -183,21 +183,34 @@ int LinuxParser::RunningProcesses() {
   return running_process;
 }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
+// Read and return the command associated with a process
 string LinuxParser::Command(int pid) {
   string cmdl;
   std::ifstream stream(kProcDirectory + to_string(pid) + kCmdlineFilename);
-  if(stream.is_open()){
+  if (stream.is_open()) {
     std::getline(stream, cmdl);
     return cmdl;
   }
   return string();
 }
 
-// TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+// Read and return the number of active jiffies for a PID
+long LinuxParser::ActiveJiffies(int pid) {
+  string line;
+  long sum_(0), utime_(0), stime_(0), cutime_(0), cstime_(0), temp;
+  string dict = kProcDirectory + to_string(pid) + kStatFilename;
+  std::ifstream stream(dict);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    for (int i = 0; i < 13; i++) {
+      linestream >> temp;
+    }
+    linestream >> utime_>>stime_>>cutime_>>cstime_;
+  }
+  sum_ = utime_ + stime_ + cutime_ + cstime_;
+  return sum_;
+}
 
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
