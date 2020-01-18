@@ -196,20 +196,40 @@ string LinuxParser::Command(int pid) {
 
 // Read and return the number of active jiffies for a PID
 long LinuxParser::ActiveJiffies(int pid) {
-  string line;
-  long sum_(0), utime_(0), stime_(0), cutime_(0), cstime_(0), temp;
+  string line, temp;
+  long sum_(0), utime_(0), stime_(0), cutime_(0), cstime_(0);
   string dict = kProcDirectory + to_string(pid) + kStatFilename;
   std::ifstream stream(dict);
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
-    for (int i = 0; i < 13; i++) {
+    linestream >> temp >> temp >> temp >> temp >> temp >> temp >> temp >>
+        temp >> temp >> temp >> temp >> temp >> temp >> utime_ >> stime_ >>
+        cutime_ >> cstime_;
+    sum_ = utime_ + stime_ + cutime_ + cstime_;
+    return sum_;
+  }
+  return sum_;
+}
+
+// Read and return the uptime of a process
+long LinuxParser::UpTime(int pid) {
+  long sys_uptime = LinuxParser::UpTime();
+  long processuptime_(0);
+  long starttime_(0);
+  string line, temp;
+  string dict = kProcDirectory + to_string(pid) + kStatFilename;
+  std::ifstream stream(dict);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    for (int i = 0; i < 21; i++) {
       linestream >> temp;
     }
-    linestream >> utime_>>stime_>>cutime_>>cstime_;
+    linestream >> starttime_;
   }
-  sum_ = utime_ + stime_ + cutime_ + cstime_;
-  return sum_;
+  processuptime_ = sys_uptime * sysconf(_SC_CLK_TCK) - starttime_;
+  return processuptime_;
 }
 
 // TODO: Read and return the memory used by a process
@@ -223,7 +243,3 @@ string LinuxParser::Uid(int pid[[maybe_unused]]) { return string(); }
 // TODO: Read and return the user associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::User(int pid[[maybe_unused]]) { return string(); }
-
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid[[maybe_unused]]) { return 0; }
