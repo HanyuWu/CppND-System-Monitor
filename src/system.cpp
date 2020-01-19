@@ -20,6 +20,7 @@ Processor& System::Cpu() { return cpu_; }
 
 // Return a container composed of the system's processes
 vector<Process>& System::Processes() {
+  processes_ = {};
   vector<int> pid = LinuxParser::Pids();
   for (int i = 0; i < int(pid.size()); i++) {
     processes_.push_back(Process(pid[i]));  // I am actually very confusing about how this push_back work, how does it

@@ -232,13 +232,43 @@ long LinuxParser::UpTime(int pid) {
   return processuptime_;
 }
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Ram(int pid[[maybe_unused]]) { return string(); }
+// Read and return the memory used by a process
+string LinuxParser::Ram(int pid) {
+  string dict = kProcDirectory + to_string(pid) + kStatusFilename;
+  string line, temp;
+  long vmsize_(0);
+  std::ifstream stream(dict);
+  if (stream.is_open()) {
+    while (getline(stream, line)) {
+      std::istringstream linestream(line);
+      linestream >> temp;
+      if(temp == "VmSize:"){
+        linestream >> vmsize_;
+        vmsize_ = vmsize_/1024;
+        return to_string(vmsize_);
+      }
+    }
+  }
+  return to_string(vmsize_);
+}
 
-// TODO: Read and return the user ID associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Uid(int pid[[maybe_unused]]) { return string(); }
+// Read and return the user ID associated with a process
+string LinuxParser::Uid(int pid) {
+  string dict = kProcDirectory + to_string(pid) + kStatusFilename;
+  string line, temp, uid_;
+    std::ifstream stream(dict);
+  if (stream.is_open()) {
+    while (getline(stream, line)) {
+      std::istringstream linestream(line);
+      linestream >> temp;
+      if(temp == "Uid:"){
+        linestream >> uid_;
+        return uid_;
+      }
+    }
+  }
+  return uid_;
+  }
 
 // TODO: Read and return the user associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
