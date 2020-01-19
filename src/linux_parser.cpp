@@ -242,9 +242,9 @@ string LinuxParser::Ram(int pid) {
     while (getline(stream, line)) {
       std::istringstream linestream(line);
       linestream >> temp;
-      if(temp == "VmSize:"){
+      if (temp == "VmSize:") {
         linestream >> vmsize_;
-        vmsize_ = vmsize_/1024;
+        vmsize_ = vmsize_ / 1024;
         return to_string(vmsize_);
       }
     }
@@ -256,20 +256,34 @@ string LinuxParser::Ram(int pid) {
 string LinuxParser::Uid(int pid) {
   string dict = kProcDirectory + to_string(pid) + kStatusFilename;
   string line, temp, uid_;
-    std::ifstream stream(dict);
+  std::ifstream stream(dict);
   if (stream.is_open()) {
     while (getline(stream, line)) {
       std::istringstream linestream(line);
       linestream >> temp;
-      if(temp == "Uid:"){
+      if (temp == "Uid:") {
         linestream >> uid_;
         return uid_;
       }
     }
   }
   return uid_;
-  }
+}
 
-// TODO: Read and return the user associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::User(int pid[[maybe_unused]]) { return string(); }
+// Read and return the user associated with a process
+string LinuxParser::User(int pid) {
+  string uid_ = LinuxParser::Uid(pid);
+  std::ifstream stream(kPasswordPath);
+  string line, usr_, temp_, Uid_;
+  if (stream.is_open()) {
+    while (getline(stream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::istringstream linestream(line);
+      linestream >> usr_ >> temp_ >> Uid_;
+      if (Uid_ == uid_) {
+        return usr_;
+      }
+    }
+  }
+  return usr_;
+}
